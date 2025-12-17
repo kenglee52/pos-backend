@@ -29,6 +29,8 @@ export const getProductById = async (req: Request, res: Response) => {
   }
 };
 
+
+
 export const createProduct = async (req: Request, res: Response) => {
   try {
     const {
@@ -37,12 +39,13 @@ export const createProduct = async (req: Request, res: Response) => {
       unitID,
       stockQty,
       price,
-      image,
       importPrice,
       manufacture,
       expiry,
       description,
     } = req.body;
+
+    const file = req.file as any;
 
     if (
       !productName ||
@@ -50,8 +53,8 @@ export const createProduct = async (req: Request, res: Response) => {
       !unitID ||
       stockQty === undefined ||
       !price ||
-      !image ||
-      !importPrice
+      !importPrice ||
+      !file
     ) {
       return res.status(400).json({ message: "ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບ" });
     }
@@ -61,14 +64,16 @@ export const createProduct = async (req: Request, res: Response) => {
       return res.status(409).json({ message: "ຊື່ສິນຄ້ານີ້ຖືກໃຊ້ແລ້ວ" });
     }
 
+    const imageUrl = file.path;
+
     const product = await productService.createProduct(
       productName,
       categoryID,
       unitID,
-      stockQty,
-      price,
-      image,
-      importPrice,
+      Number(stockQty),
+      Number(price),
+      imageUrl,
+      Number(importPrice),
       manufacture ? new Date(manufacture) : undefined,
       expiry ? new Date(expiry) : undefined,
       description
@@ -80,9 +85,10 @@ export const createProduct = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Server error", error });
+    return res.status(500).json({ message: "Server error" });
   }
 };
+
 
 export const updateProduct = async (req: Request, res: Response) => {
   try {
