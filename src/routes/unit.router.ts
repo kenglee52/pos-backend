@@ -3,10 +3,10 @@ import { Router } from "express";
 
 const unitRouter = Router();
 
-unitRouter.get("/", unitController.getUnits);
-unitRouter.get("/:id", unitController.getUnitById);
-unitRouter.post("/", unitController.createUnit);
-unitRouter.put("/:id", unitController.updateUnit);
-unitRouter.delete("/:id", unitController.deleteUnit);
+unitRouter.get("/unit", unitController.getUnits);
+unitRouter.get("/unit/:id", unitController.getUnitById);
+unitRouter.post("/unit", unitController.createUnit);
+unitRouter.put("/unit/:id", unitController.updateUnit);
+unitRouter.delete("/unit/:id", unitController.deleteUnit);
 
 export default unitRouter

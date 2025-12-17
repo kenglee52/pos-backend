@@ -1,5 +1,8 @@
 import * as employeeService from "../services/employee.service";
 import { Request, Response } from "express";
+import bcrypt from "bcrypt";
+import { PrismaClient } from "../generated/prisma/client";
+const prisma = new PrismaClient();
 
 export const getEmployees = async (req: Request, res: Response) => {
   try {
@@ -35,13 +38,14 @@ export const createEmployee = async (req: Request, res: Response) => {
     if (telExist) {
       return res.status(409).json({ message: "ເບີໂທນີ້ຖືກໃຊ້ແລ້ວ" });
     }
+    const hashPassword = await bcrypt.hash(password, 10);
     const employee = await employeeService.createEmployee(
       employeeID,
       employeeName,
       gender,
       tel,
       departmentID,
-      password
+      hashPassword
     );
     return res.status(201).json({
       message: "ສ້າງພະນັກງານສຳເລັດ",
@@ -100,3 +104,26 @@ export const deleteEmployee = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const loginEmployee = async(req:Request, res: Response) =>{
+  const {tel , password} = req.body;
+  try {
+    const employee = await prisma.employee.findFirst({
+      where: {tel: tel}
+    });
+    if(!employee){
+      return res.status(404).json({message: "Tel not found"});
+    }
+    const isMatch = await bcrypt.compare(tel, employee.tel);
+    if(!isMatch){
+      return res.status(400).json({message: "Password is incorrect"});
+    }
+    res.status(200).json({
+      message: "Login success",
+      data : employee
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error });
+  }
+}

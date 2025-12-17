@@ -2,10 +2,10 @@ import * as productController from "../controllers/product.controller";
 import { Router } from "express";
 const productRouter = Router();
 
-productRouter.get("/", productController.getProducts);
-productRouter.get("/:id", productController.getProductById);
-productRouter.post("/", productController.createProduct);
-productRouter.put("/:id", productController.updateProduct);
-productRouter.delete("/:id", productController.deleteProduct);
+productRouter.get("/product", productController.getProducts);
+productRouter.get("/product/:id", productController.getProductById);
+productRouter.post("/product", productController.createProduct);
+productRouter.put("/product/:id", productController.updateProduct);
+productRouter.delete("/product/:id", productController.deleteProduct);
 
 export default productRouter;

@@ -3,14 +3,16 @@ import * as customerController from "../controllers/customer.controller";
 
 const router = Router();
 
-router.post("/", customerController.createCustomer);
+router.post("/customer", customerController.createCustomer);
 
-router.get("/", customerController.getCustomers);
+router.get("/customer", customerController.getCustomers);
 
-router.get("/:id", customerController.getCustomerById);
+router.get("/customer/:id", customerController.getCustomerById);
 
-router.put("/:id", customerController.updateCustomer);
+router.put("/customer/:id", customerController.updateCustomer);
 
-router.delete("/:id", customerController.deleteCustomer);
+router.delete("/customer/:id", customerController.deleteCustomer);
+
+router.post("/customer-login", customerController.loginCustomer);
 
 export default router;

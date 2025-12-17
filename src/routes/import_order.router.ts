@@ -3,10 +3,10 @@ import { Router } from "express";
 
 const importOrderRouter = Router();
 
-importOrderRouter.get("/", importOrderController.getImportOrders);
-importOrderRouter.get("/:id", importOrderController.getImportOrderById);
-importOrderRouter.post("/", importOrderController.createImportOrder);
-importOrderRouter.put("/:id", importOrderController.updateImportOrder);
-importOrderRouter.delete("/:id", importOrderController.deleteImportOrder);
+importOrderRouter.get("/import_order", importOrderController.getImportOrders);
+importOrderRouter.get("/import_order/:id", importOrderController.getImportOrderById);
+importOrderRouter.post("/import_order", importOrderController.createImportOrder);
+importOrderRouter.put("/import_order/:id", importOrderController.updateImportOrder);
+importOrderRouter.delete("/import_order/:id", importOrderController.deleteImportOrder);
 
 export default importOrderRouter;

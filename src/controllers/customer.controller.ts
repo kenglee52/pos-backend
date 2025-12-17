@@ -1,5 +1,8 @@
 import { Request, Response } from "express";
 import * as customerService from "../services/customer.service";
+import bcrypt from "bcrypt";
+import { PrismaClient } from "../generated/prisma/client";
+const prisma = new PrismaClient();
 
 export const createCustomer = async (req: Request, res: Response) => {
   try {
@@ -15,11 +18,11 @@ export const createCustomer = async (req: Request, res: Response) => {
         message: "ເບີໂທນີ້ຖືກໃຊ້ແລ້ວ",
       });
     }
-
+    const hashPassword = await bcrypt.hash(customerPassword, 10);
     const customer = await customerService.createCustomer(
       customerName,
       customerTel,
-      customerPassword
+      hashPassword
     );
 
     return res.status(201).json({
@@ -131,3 +134,26 @@ export const deleteCustomer = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const loginCustomer = async(req:Request, res: Response) =>{
+  const {customerTel, customerPassword} = req.body;
+  try {
+    const customer = await prisma.customer.findFirst({
+      where: {customerTel: customerTel}
+    })
+    if(!customer) {
+      return res.status(404).json({message:"Tel not found"})
+    }
+    const isMatch = await bcrypt.compare(customerPassword, customer.customerPassword);
+    if(!isMatch) {
+      return res.status(400).json({message: "Password is incorrect"});
+    }
+    res.status(200).json({
+      message: "Login success",
+      data: customer
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+}
