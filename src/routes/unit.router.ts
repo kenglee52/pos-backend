@@ -1,8 +1,12 @@
+import * as unitController from "../controllers/unit.controller";
 import { Router } from "express";
-import * as UnitController from "../controllers/unit.controller";
 
-const router = Router();
+const unitRouter = Router();
 
-router.post("/unit", UnitController.createUnit);
+unitRouter.get("/", unitController.getUnits);
+unitRouter.get("/:id", unitController.getUnitById);
+unitRouter.post("/", unitController.createUnit);
+unitRouter.put("/:id", unitController.updateUnit);
+unitRouter.delete("/:id", unitController.deleteUnit);
 
-export default router;
+export default unitRouter

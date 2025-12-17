@@ -1,0 +1,102 @@
+import * as employeeService from "../services/employee.service";
+import { Request, Response } from "express";
+
+export const getEmployees = async (req: Request, res: Response) => {
+  try {
+    const employees = await employeeService.getEmployees();
+    res.status(200).json(employees);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "ບໍ່ພົບຂໍ້ມູນ", error });
+  }
+};
+
+export const getEmployeeById = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const employee = await employeeService.getEmployeeById(id);
+    if (!employee) {
+      return res.status(404).json({ message: "ບໍ່ພົບພະນັກງານ" });
+    }
+    res.status(200).json(employee);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const createEmployee = async (req: Request, res: Response) => {
+  try {
+    const { employeeID, employeeName, gender, tel, departmentID, password } = req.body;
+    if (!employeeID || !employeeName || !gender || !tel || !departmentID || !password) {
+      return res.status(400).json({ message: "ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບ" });
+    }
+    const telExist = await employeeService.checkEmployeeTel(tel);
+    if (telExist) {
+      return res.status(409).json({ message: "ເບີໂທນີ້ຖືກໃຊ້ແລ້ວ" });
+    }
+    const employee = await employeeService.createEmployee(
+      employeeID,
+      employeeName,
+      gender,
+      tel,
+      departmentID,
+      password
+    );
+    return res.status(201).json({
+      message: "ສ້າງພະນັກງານສຳເລັດ",
+      data: employee,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const updateEmployee = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const { employeeName, gender, tel, departmentID, password } = req.body;
+    if (!employeeName || !gender || !tel || !departmentID || !password) {
+      return res.status(400).json({ message: "ຂໍ້ມູນຫ້າມເປັນຄ່າຫວ່າງ" });
+    }
+    const oldEmployee = await employeeService.getEmployeeById(id);
+    if (!oldEmployee) {
+      return res.status(404).json({ message: "ບໍ່ພົບພະນັກງານ" });
+    }
+    const telExist = await employeeService.checkEmployeeTel(tel);
+    if (telExist && telExist.employeeID !== id) {
+      return res.status(409).json({ message: "ເບີໂທນີ້ຖືກໃຊ້ແລ້ວ" });
+    }
+    const updated = await employeeService.updateEmployee(
+      id,
+      employeeName,
+      gender,
+      tel,
+      departmentID,
+      password
+    );
+    res.status(200).json({
+      message: "ອັບເດດສຳເລັດ",
+      data: updated,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const deleteEmployee = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const employee = await employeeService.getEmployeeById(id);
+    if (!employee) {
+      return res.status(404).json({ message: "ບໍ່ພົບພະນັກງານ" });
+    }
+    await employeeService.deleteEmployee(id);
+    res.json({ message: "ລຶບພະນັກງານສຳເລັດ" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
