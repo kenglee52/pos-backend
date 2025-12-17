@@ -1,0 +1,167 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  // url = env("DATABASE_URL")
+}
+
+model Customer {
+  customerID       Int      @id @default(autoincrement()) 
+  customerName     String   @db.Char(50)
+  customerTel      String   @db.Char(11) @unique
+  customerPassword String
+  onlineBills      OnlineBill[]
+
+  @@map("customer")
+}
+
+model Department {
+  departmentID   Int       @id @default(autoincrement())
+  departmentName String    @db.Char(50) @unique
+  employees      Employee[]
+
+  @@map("department")
+}
+
+model Employee {
+  employeeID   String     @id @db.Char(6)
+  employeeName String     @db.Char(50)
+  gender       String     @db.Char(15)
+  tel          String     @db.Char(11) @unique
+  departmentID Int
+  department   Department @relation(fields: [departmentID], references: [departmentID], onDelete: Cascade, onUpdate: Cascade)
+  password     String
+  bills        Bill[]
+
+  @@map("employee")
+}
+
+model Category {
+  categoryID   Int       @id @default(autoincrement())
+  categoryName String    @db.Char(50) @unique
+  products     Product[]
+
+  @@map("category")
+}
+
+model Unit {
+  unitID   Int      @id @default(autoincrement())
+  unitName String   @db.Char(50) @unique
+  products Product[]
+
+  @@map("unit")
+}
+
+model Product {
+  productID    Int           @id @default(autoincrement())
+  productName  String        @db.Char(50) @unique
+  categoryID   Int
+  category     Category      @relation(fields: [categoryID], references: [categoryID], onDelete: Cascade, onUpdate: Cascade)
+  unitID       Int
+  unit         Unit          @relation(fields: [unitID], references: [unitID], onDelete: Cascade, onUpdate: Cascade)
+  stockQty     Int
+  price        Int
+  image        String
+  importPrice  Int
+  manufacture  DateTime?
+  expiry       DateTime?
+  description  String?
+  onlineOrders OnlineOrder[]
+  orders       Order[]
+  importOrders ImportOrder[]
+
+  @@map("product")
+}
+
+model OnlineBill {
+  onlineBillID   Int           @id @default(autoincrement())
+  customerID     Int
+  customer       Customer      @relation(fields: [customerID], references: [customerID], onDelete: Cascade, onUpdate: Cascade)
+  logisticType   String        @db.Char(50)
+  logisticName   String        @db.Char(100)
+  onlineBillDate DateTime?
+  send           Boolean       @default(false)
+  onlineOrders   OnlineOrder[]
+
+  @@map("online_bill")
+}
+
+model OnlineOrder {
+  onlineOrderID Int        @id @default(autoincrement())
+  onlineBillID  Int
+  onlineBill    OnlineBill @relation(fields: [onlineBillID], references: [onlineBillID], onDelete: Cascade, onUpdate: Cascade)
+  productID     Int
+  product       Product    @relation(fields: [productID], references: [productID], onDelete: Cascade, onUpdate: Cascade)
+  saleQty       Int?
+  total         Int?
+
+  @@map("online_order")
+}
+
+model Bill {
+  billID     Int      @id @default(autoincrement())
+  employeeID String
+  employee   Employee @relation(fields: [employeeID], references: [employeeID], onDelete: Cascade, onUpdate: Cascade)
+  billDate   DateTime?
+  orders     Order[]
+
+  @@map("bill")
+}
+
+model Order {
+  orderID   Int     @id @default(autoincrement())
+  billID    Int
+  bill      Bill    @relation(fields: [billID], references: [billID], onDelete: Cascade, onUpdate: Cascade)
+  productID Int
+  product   Product @relation(fields: [productID], references: [productID], onDelete: Cascade, onUpdate: Cascade)
+  saleQty   Int?
+  total     Int?
+
+  @@map("order")
+}
+
+model Supplier {
+  supplierID      Int          @id @default(autoincrement())
+  supplierName    String       @db.Char(50)
+  supplierTel     String       @db.Char(11) @unique
+  supplierEmail   String       @db.Char(50) @unique
+  supplierAddress String
+  contactPerson   String       @db.Char(50)
+  importBills     ImportBill[]
+
+  @@map("supplier")
+}
+
+model ImportBill {
+  importBillID Int        @id @default(autoincrement())
+  supplierID   Int
+  supplier     Supplier   @relation(fields: [supplierID], references: [supplierID], onDelete: Cascade, onUpdate: Cascade)
+  importDate   DateTime
+  totalAmount  Int
+  status       String     @default("pending")
+  importOrders ImportOrder[]
+
+  @@map("import_bill")
+}
+
+model ImportOrder {
+  importOrderID Int       @id @default(autoincrement())
+  importBillID  Int
+  importBill    ImportBill @relation(fields: [importBillID], references: [importBillID], onDelete: Cascade, onUpdate: Cascade)
+  productID     Int
+  product       Product    @relation(fields: [productID], references: [productID], onDelete: Cascade, onUpdate: Cascade)
+  importQty     Int
+  importPrice   Int
+  total         Int
+
+  @@map("import_order")
+}
