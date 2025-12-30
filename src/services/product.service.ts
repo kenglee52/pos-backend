@@ -3,12 +3,14 @@ const prisma = new PrismaClient();
 
 
 export const getProducts = async() => {
-    return await prisma.product.findMany({
+    return await prisma.product.findMany(
+        {
         include: {
             category: true,
             unit: true
         }
-    });
+    }
+);
 }
 
 export const getProductById = async(id: number) => {

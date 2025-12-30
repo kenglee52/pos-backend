@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export const createCustomer = async (req: Request, res: Response) => {
   try {
-    const { customerName, customerTel, customerPassword } = req.body;
+    const {customerID, customerName, customerTel, customerPassword } = req.body;
     if (!customerName || !customerTel || !customerPassword) {
       return res.status(400).json({
         message: "ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບ",

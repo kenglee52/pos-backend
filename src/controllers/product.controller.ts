@@ -68,8 +68,8 @@ export const createProduct = async (req: Request, res: Response) => {
 
     const product = await productService.createProduct(
       productName,
-      categoryID,
-      unitID,
+      Number(categoryID),
+      Number(unitID),
       Number(stockQty),
       Number(price),
       imageUrl,

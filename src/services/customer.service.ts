@@ -19,7 +19,7 @@ export const createCustomer = async(customerName: string, customerTel: string, c
 }
 
 export const getCustomers = async() =>{
-   return await prisma.customer.findFirstOrThrow();
+   return await prisma.customer.findMany();
 }
 
 export const getCustomerById = async(id:number) =>{
