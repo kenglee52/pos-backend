@@ -34,8 +34,9 @@ export const createOnlineBill = async (req: Request, res: Response) => {
     if (!customerID || !logisticType || !logisticName) {
       return res.status(400).json({ message: "ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບ" });
     }
+    
     const onlineBill = await onlineBillService.createOnlineBill(
-      customerID,
+      Number(customerID),
       logisticType,
       logisticName,
       onlineBillDate ? new Date(onlineBillDate) : undefined,

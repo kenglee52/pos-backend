@@ -2,12 +2,14 @@ import { PrismaClient } from "../generated/prisma/client";
 const prisma = new PrismaClient();
 
 export const getOnlineOrders = async() => {
-    return await prisma.onlineOrder.findMany({
-        include: {
-            onlineBill: true,
-            product: true
-        }
-    });
+    return await prisma.onlineOrder.findMany(
+    //     {
+    //     include: {
+    //         onlineBill: true,
+    //         product: true
+    //     }
+    // }
+);
 }
 
 export const getOnlineOrderById = async(id: number) => {
