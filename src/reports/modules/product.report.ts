@@ -7,10 +7,17 @@ export const getBestProduct = async(req: Request, res: Response) => {
             SELECT 
                 p.productID,
                 p.productName,
+                c.categoryID,
                 c.categoryName AS category,
                 u.unitName AS unit,
+                u.unitID,
                 p.price,
                 p.image,
+                p.importPrice,
+                p.stockQty,
+                p.importPrice,
+                p.manufacture,
+                p.expiry,
                 p.description,
                 SUM(oo.saleQty) AS totalSold
             FROM online_order oo
