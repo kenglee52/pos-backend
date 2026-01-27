@@ -4,16 +4,19 @@ const prisma = new PrismaClient();
 
 export const getOnlineBills = async() => {
     return await prisma.onlineBill.findMany(
-    //     {
-    //     include: {
-    //         customer: true,
-    //         onlineOrders: {
-    //             include: {
-    //                 product: true
-    //             }
-    //         }
-    //     }
-    // }
+        {
+        include: {
+            customer: true,
+            onlineOrders: {
+                include: {
+                    product: true
+                }
+            }
+        },
+         orderBy: {
+            onlineBillID: "desc",
+        }
+    }
 );
 }
 

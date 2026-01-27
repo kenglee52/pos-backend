@@ -30,8 +30,8 @@ export const getEmployeeById = async (req: Request, res: Response) => {
 
 export const createEmployee = async (req: Request, res: Response) => {
   try {
-    const { employeeID, employeeName, gender, tel, departmentID, password } = req.body;
-    if (!employeeID || !employeeName || !gender || !tel || !departmentID || !password) {
+    const {employeeName, gender, tel, departmentID, password } = req.body;
+    if (!employeeName || !gender || !tel || !departmentID || !password) {
       return res.status(400).json({ message: "ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບ" });
     }
     const telExist = await employeeService.checkEmployeeTel(tel);
@@ -40,7 +40,6 @@ export const createEmployee = async (req: Request, res: Response) => {
     }
     const hashPassword = await bcrypt.hash(password, 10);
     const employee = await employeeService.createEmployee(
-      employeeID,
       employeeName,
       gender,
       tel,
@@ -60,8 +59,8 @@ export const createEmployee = async (req: Request, res: Response) => {
 export const updateEmployee = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
-    const { employeeName, gender, tel, departmentID, password } = req.body;
-    if (!employeeName || !gender || !tel || !departmentID || !password) {
+    const { employeeName, gender, tel, departmentID } = req.body;
+    if (!employeeName || !gender || !tel || !departmentID ) {
       return res.status(400).json({ message: "ຂໍ້ມູນຫ້າມເປັນຄ່າຫວ່າງ" });
     }
     const oldEmployee = await employeeService.getEmployeeById(id);
@@ -78,7 +77,6 @@ export const updateEmployee = async (req: Request, res: Response) => {
       gender,
       tel,
       departmentID,
-      password
     );
     res.status(200).json({
       message: "ອັບເດດສຳເລັດ",
@@ -114,7 +112,7 @@ export const loginEmployee = async(req:Request, res: Response) =>{
     if(!employee){
       return res.status(404).json({message: "Tel not found"});
     }
-    const isMatch = await bcrypt.compare(tel, employee.tel);
+    const isMatch = await bcrypt.compare(password, employee.password);
     if(!isMatch){
       return res.status(400).json({message: "Password is incorrect"});
     }
