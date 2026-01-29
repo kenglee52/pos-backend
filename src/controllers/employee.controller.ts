@@ -107,7 +107,10 @@ export const loginEmployee = async(req:Request, res: Response) =>{
   const {tel , password} = req.body;
   try {
     const employee = await prisma.employee.findFirst({
-      where: {tel: tel}
+      where: {tel: tel},
+      include: {
+        department: true,
+      }
     });
     if(!employee){
       return res.status(404).json({message: "Tel not found"});
